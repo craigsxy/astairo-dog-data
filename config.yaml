@@ -61,6 +61,9 @@ split:
 
 target_per_breed: [400, 800]  # 每个品种保留目标区间（超出上限会随机下采样）
 
+thudogs:
+  min_short_side: 200       # 清华低清版单独的最短边下限
+
 negatives:
   enabled: false              # 预留：小型犬、大型犬、猫作为负样本
 

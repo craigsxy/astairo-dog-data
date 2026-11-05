@@ -1,0 +1,23 @@
+# 清华狗数据集类别（目录名最后一段，大小写不敏感） -> breeds.yaml 品种 id
+# 清华没有的品种：english_bulldog, american_cocker, shar_pei, bull_terrier,
+#                 australian_cattle_dog, mixed_medium
+map:
+  Shiba_Dog: shiba_inu
+  Pembroke: pembroke_corgi
+  Cardigan: cardigan_corgi
+  Border_collie: border_collie
+  beagle: beagle
+  French_bulldog: french_bulldog
+  cocker_spaniel: english_cocker   # 清华沿用 ImageNet 的 cocker spaniel，未区分英/美系
+  chinese_rural_dog: chinese_rural_dog
+  Australian_Shepherd: australian_shepherd
+  Shetland_sheepdog: shetland_sheepdog
+  basset: basset_hound
+  chow: chow_chow
+  standard_schnauzer: standard_schnauzer
+  Staffordshire_bullterrier: staffordshire_bull_terrier
+  Siberian_husky: siberian_husky
+  whippet: whippet
+  English_springer: springer_spaniel
+  Brittany_spaniel: brittany
+  keeshond: keeshond

@@ -75,7 +75,9 @@ def main():
     ap.add_argument("--breeds", nargs="*")
     args = ap.parse_args()
     cfg = load_config()
-    c, o = cfg["clean"], cfg["output"]
+    c, o = dict(cfg["clean"]), cfg["output"]
+    # 清华低清版中位短边约 314px，沿用 256 会丢掉约四分之一；单独放宽
+    c["min_short_side"] = cfg.get("thudogs", {}).get("min_short_side", c["min_short_side"])
     mapping = yaml.safe_load(open(ROOT / "thudogs_breed_map.yaml", encoding="utf-8"))["map"]
     wanted = {b["id"] for b in load_breeds(args.breeds)}
     inv = {k.lower(): v for k, v in mapping.items() if v in wanted}
