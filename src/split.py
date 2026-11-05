@@ -110,7 +110,7 @@ def build_dataset(cfg: dict) -> list[dict]:
         r["final_file"] = f"images/{s}/{name}.jpg"
         manifest.append({
             "file": r["final_file"], "split": s, "breed_id": bid, "breed_zh": zh.get(bid, ""),
-            "query": r["query"], "source_url": r["source_url"], "width": r["width"],
+            "source": r.get("source", "crawl"), "query": r["query"], "source_url": r["source_url"], "width": r["width"],
             "height": r["height"], "num_dogs": r["num_dogs"], "max_dog_conf": r["max_dog_conf"],
             "phash": r["phash"],
         })
