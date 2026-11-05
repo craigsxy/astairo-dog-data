@@ -1,0 +1,33 @@
+# 中型犬品种清单。extra 为补充搜索词（会作为独立关键词抓取）。
+breeds:
+  - {id: pembroke_corgi, zh: 柯基, en: Pembroke Welsh Corgi}
+  - {id: cardigan_corgi, zh: 卡迪根柯基, en: Cardigan Welsh Corgi}
+  - {id: shiba_inu, zh: 柴犬, en: Shiba Inu}
+  - {id: border_collie, zh: 边境牧羊犬, en: Border Collie}
+  - {id: beagle, zh: 比格犬, en: Beagle}
+  - {id: french_bulldog, zh: 法国斗牛犬, en: French Bulldog}
+  - {id: english_bulldog, zh: 英国斗牛犬, en: English Bulldog}
+  - {id: english_cocker, zh: 英国可卡, en: English Cocker Spaniel}
+  - {id: american_cocker, zh: 美国可卡, en: American Cocker Spaniel}
+  - id: chinese_rural_dog
+    zh: 中华田园犬
+    en: Chinese rural
+    extra: [土狗, 中华田园犬 在家, Chinese village dog, Chinese native dog indoor]
+  - {id: australian_shepherd, zh: 澳洲牧羊犬, en: Australian Shepherd}
+  - {id: shetland_sheepdog, zh: 喜乐蒂, en: Shetland Sheepdog}
+  - {id: basset_hound, zh: 巴吉度, en: Basset Hound}
+  - {id: chow_chow, zh: 松狮, en: Chow Chow}
+  - {id: standard_schnauzer, zh: 标准雪纳瑞, en: Standard Schnauzer}
+  - {id: staffordshire_bull_terrier, zh: 斯塔福梗, en: Staffordshire Bull Terrier}
+  - {id: siberian_husky, zh: 哈士奇, en: Siberian Husky}
+  - {id: shar_pei, zh: 沙皮犬, en: Shar Pei}
+  - {id: whippet, zh: 惠比特犬, en: Whippet}
+  - {id: springer_spaniel, zh: 史宾格犬, en: English Springer Spaniel}
+  - {id: bull_terrier, zh: 牛头梗, en: Bull Terrier}
+  - {id: australian_cattle_dog, zh: 澳洲牧牛犬, en: Australian Cattle}
+  - {id: brittany, zh: 布列塔尼猎犬, en: Brittany Spaniel}
+  - {id: keeshond, zh: 荷兰毛狮犬, en: Keeshond}
+  - id: mixed_medium
+    zh: 中型混种犬
+    en: medium sized mixed breed
+    extra: [mutt dog at home, medium size mixed breed dog lying on floor]

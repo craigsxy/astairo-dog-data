@@ -1,0 +1,69 @@
+# 流水线可调参数。命令行参数会覆盖这里的同名值。
+
+crawl:
+  max_per_query: 200          # 每个关键词最多抓取张数
+  threads: 8                  # 下载线程
+  sleep_between_queries: [2, 5]   # 关键词之间随机等待秒数
+  queries_en:
+    - "{en} dog"
+    - "{en} dog indoor"
+    - "{en} lying on floor"
+    - "{en} sleeping at home"
+    - "{en} puppy"
+    - "{en} dog living room"
+    - "{en} dog low angle photo"
+  queries_zh:
+    - "{zh}"
+    - "{zh} 室内"
+    - "{zh} 在家 趴着"
+  # 最终数量不足 min_final 时追加的补抓模板
+  fallback_queries:
+    - "{en} dog on carpet"
+    - "{en} dog resting on sofa"
+    - "{en} dog at home photo"
+  min_final: 200
+
+clean:
+  min_short_side: 256         # 最短边小于该值丢弃
+  max_aspect_ratio: 3.0       # 长宽比超过该值丢弃
+
+dedup:
+  phash_threshold: 6          # 感知哈希汉明距离阈值
+
+detect:
+  weights: [yolo11n.pt, yolov8n.pt]   # 依次尝试
+  conf: 0.5
+  min_dogs: 1
+  max_dogs: 3
+  min_box_area_ratio: 0.02    # 狗框面积 / 全图面积 下限
+  coco_dog_class: 16
+
+clip:
+  enabled: true
+  model: ViT-B-32
+  pretrained: laion2b_s34b_b79k
+  threshold: 0.5              # 非真实照片概率之和超过该值丢弃
+  prompts:
+    real: ["a real photo of a dog"]
+    fake:
+      - "a cartoon or illustration of a dog"
+      - "a stuffed toy dog"
+      - "an image of text or a meme"
+
+output:
+  long_side: 1024
+  jpeg_quality: 90
+  class_name: medium_dog
+
+split:
+  ratios: [0.8, 0.1, 0.1]     # train / val / test
+  seed: 42
+
+target_per_breed: [400, 800]  # 每个品种保留目标区间（超出上限会随机下采样）
+
+negatives:
+  enabled: false              # 预留：小型犬、大型犬、猫作为负样本
+
+package:
+  name: astairo_medium_dog_v1
+  volume_size_mb: 1024

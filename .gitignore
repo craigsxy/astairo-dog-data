@@ -1,0 +1,14 @@
+data/
+logs/
+*.zip
+*.zip.*
+*.jpg
+*.jpeg
+*.png
+!reports/contact_sheets/*.jpg
+*.pt
+*.pth
+__pycache__/
+*.pyc
+.venv/
+rclone.conf

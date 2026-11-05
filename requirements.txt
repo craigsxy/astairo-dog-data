@@ -1,0 +1,12 @@
+# CPU 版 torch 建议先单独装：
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+torch
+torchvision
+icrawler>=0.6.9
+imagehash>=4.3
+Pillow>=10.0
+ultralytics>=8.3
+open_clip_torch>=2.24
+pyyaml>=6.0
+pandas>=2.0
+tqdm>=4.66
