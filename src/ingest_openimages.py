@@ -62,9 +62,7 @@ def fetch(split: str, iid: str) -> bytes | None:
         try:
             r = requests.get(S3.format(split=split, id=iid), timeout=30)
             if r.status_code == 200:
-                local.parent.mkdir(parents=True, exist_ok=True)
-                local.write_bytes(r.content)
-                return r.content
+                return r.content  # 不缓存原图，节省磁盘（2 万张原图约 7GB）
             return None
         except Exception:
             continue
@@ -77,17 +75,23 @@ def main():
     cands = load_candidates(cfg)
     random.Random(42).shuffle(cands)
     cands = cands[:n]
-    with ThreadPoolExecutor(16) as ex:
-        raws = list(ex.map(lambda c: fetch(c[0], c[1]), cands))
-    rows = []
-    for (split, iid, boxes), raw in zip(cands, raws):
+    def work(c):
+        split, iid, boxes = c
         rec = {"breed": BID, "query": f"openimages:{split}", "source": "openimages",
                "source_url": S3.format(split=split, id=iid), "orig_file": iid}
+        raw = fetch(split, iid)
         if raw is None:
             rec.update(keep=False, drop_reason="download_failed")
-        else:
-            rec = process_image(raw, rec, BID, cfg, cfg["clean"]["min_short_side"], boxes=boxes)
-        rows.append(rec)
+            return rec
+        return process_image(raw, rec, BID, cfg, cfg["clean"]["min_short_side"], boxes=boxes)
+
+    # 下载一张处理一张，内存里不堆原图
+    rows = []
+    with ThreadPoolExecutor(16) as ex:
+        for i, rec in enumerate(ex.map(work, cands), 1):
+            rows.append(rec)
+            if i % 2000 == 0:
+                log.info("Open Images 进度 %d/%d", i, len(cands))
     write_source("openimages", {BID: rows})
     log.info("[%s] Open Images: %d 张，保留 %d", BID, len(rows), sum(r.get("keep", False) for r in rows))
 

@@ -57,10 +57,9 @@ def build_dataset(cfg: dict) -> list[dict]:
         br = [r for r in read_jsonl(p) if r.get("keep")]
         br.sort(key=lambda r: r["sha1"])
         rng.shuffle(br)
-        if len(br) > cap:
-            for r in br[cap:]:
-                r["capped"] = True
-            br = br[:cap]
+        bcap = cfg.get("cap_overrides", {}).get(bid, cap)
+        if len(br) > bcap:
+            br = br[:bcap]
         rows.extend(br)
     if not rows:
         log.warning("没有可划分的图片")

@@ -61,15 +61,18 @@ split:
 
 target_per_breed: [400, 2000]  # 每个品种保留目标区间（超出上限会随机下采样）
 
+cap_overrides:               # 个别类别单独的上限
+  openimages_dog: 100000
+
 thudogs:
   min_short_side: 200       # 清华低清版单独的最短边下限
 
 openimages:
-  max_images: 3000          # 从 Open Images Dog 类中随机抽取的张数
+  max_images: 100000        # 从 Open Images Dog 类中随机抽取的张数（足够大即全部）
 
 negatives:
   enabled: false              # 预留：小型犬、大型犬、猫作为负样本
 
 package:
   name: astairo_medium_dog_v1
-  volume_size_mb: 1024
+  volume_size_mb: 16384       # 单个 zip 不切分卷（Windows 可直接打开）
