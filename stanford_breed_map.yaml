@@ -1,0 +1,18 @@
+# Stanford Dogs 类别 -> breeds.yaml 品种 id（Stanford 没有柴犬、中华田园犬、澳牧等）
+map:
+  Pembroke: pembroke_corgi
+  Cardigan: cardigan_corgi
+  Border_collie: border_collie
+  beagle: beagle
+  French_bulldog: french_bulldog
+  cocker_spaniel: english_cocker
+  Shetland_sheepdog: shetland_sheepdog
+  basset: basset_hound
+  chow: chow_chow
+  standard_schnauzer: standard_schnauzer
+  Staffordshire_bullterrier: staffordshire_bull_terrier
+  Siberian_husky: siberian_husky
+  whippet: whippet
+  English_springer: springer_spaniel
+  Brittany_spaniel: brittany
+  keeshond: keeshond

@@ -15,19 +15,18 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import sys
 import xml.etree.ElementTree as ET
 import zipfile
 from collections import Counter
 from pathlib import Path
 
-import imagehash
 import yaml
-from PIL import Image, ImageOps
+from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from common import DATA, ROOT, WORK, get_logger, load_breeds, load_config, write_jsonl  # noqa: E402
+from common import DATA, ROOT, WORK, get_logger, load_breeds, load_config  # noqa: E402
+from ingest_common import process_image, write_source  # noqa: E402
 
 log = get_logger("thudogs")
 SRC = DATA / "external" / "thudogs"
@@ -75,7 +74,7 @@ def main():
     ap.add_argument("--breeds", nargs="*")
     args = ap.parse_args()
     cfg = load_config()
-    c, o = dict(cfg["clean"]), cfg["output"]
+    c = dict(cfg["clean"])
     # 清华低清版中位短边约 314px，沿用 256 会丢掉约四分之一；单独放宽
     c["min_short_side"] = cfg.get("thudogs", {}).get("min_short_side", c["min_short_side"])
     mapping = yaml.safe_load(open(ROOT / "thudogs_breed_map.yaml", encoding="utf-8"))["map"]
@@ -105,46 +104,29 @@ def main():
         for p in imgs:
             rec = {"breed": bid, "query": f"thudogs:{cls}", "source_url": SOURCE_URL,
                    "source": "thudogs", "orig_file": str(p.relative_to(SRC))}
-            try:
-                x = xml_index.get(p.name) or xml_index.get(p.stem)
-                if x is None:
-                    rec.update(keep=False, drop_reason="no_annotation")
-                    per_breed[bid].append(rec)
-                    continue
-                aw, ah, body, head = parse_xml(x)
-                raw = p.read_bytes()
-                sha = hashlib.sha1(raw).hexdigest()
-                with Image.open(p) as im:
-                    im.load()
-                    im = ImageOps.exif_transpose(im).convert("RGB")
-                W, H = im.size
+            x = xml_index.get(p.name) or xml_index.get(p.stem)
+            if x is None:
+                rec.update(keep=False, drop_reason="no_annotation")
+            else:
+                try:
+                    aw, ah, body, head = parse_xml(x)
+                except Exception:
+                    aw = ah = 0
+                    body, head = [], []
                 if not body:
                     rec.update(keep=False, drop_reason="no_body_box")
-                elif min(W, H) < c["min_short_side"]:
-                    rec.update(keep=False, drop_reason="too_small", width=W, height=H)
-                elif max(W, H) / min(W, H) > c["max_aspect_ratio"]:
-                    rec.update(keep=False, drop_reason="bad_aspect", width=W, height=H)
                 else:
-                    # 标注的 width/height 若与实际图片不同，按标注尺寸归一化（坐标是在标注尺寸上标的）
-                    bw, bh = (aw, ah) if aw > 0 and ah > 0 else (W, H)
-                    scale = o["long_side"] / max(W, H)
-                    if scale < 1:
-                        im = im.resize((round(W * scale), round(H * scale)), Image.LANCZOS)
-                    out = out_dir / f"{sha}.jpg"
-                    if not out.exists():
-                        im.save(out, "JPEG", quality=o["jpeg_quality"], optimize=True)
-                    rec.update(keep=True, drop_reason=None, sha1=sha, img=str(out.relative_to(WORK)),
-                               width=im.size[0], height=im.size[1], phash=str(imagehash.phash(im)),
-                               boxes=[to_yolo(b, bw, bh) for b in body],
-                               boxes_head=[to_yolo(b, bw, bh) for b in head],
-                               num_dogs=len(body), max_dog_conf=1.0)
-            except Exception as e:
-                rec.update(keep=False, drop_reason="corrupt", error=str(e)[:120])
+                    # 坐标按标注里的尺寸归一化（与实际图片一致时等价）
+                    if aw <= 0 or ah <= 0:
+                        with Image.open(p) as im0:
+                            aw, ah = im0.size
+                    rec = process_image(p.read_bytes(), rec, bid, cfg, c["min_short_side"],
+                                        boxes=[to_yolo(b, aw, ah) for b in body],
+                                        boxes_head=[to_yolo(b, aw, ah) for b in head])
             per_breed[bid].append(rec)
 
+    write_source("thudogs", per_breed)
     for bid, rows in per_breed.items():
-        # 清华数据走“清洗”记录，dedup 读取 clean 阶段；detect/clip 由 run 时直通
-        write_jsonl(WORK / "clean" / f"{bid}.jsonl", rows)
         log.info("[%s] 清华: %d 张，保留 %d", bid, len(rows), sum(r.get("keep", False) for r in rows))
 
     missing = sorted(wanted - set(inv.values()))

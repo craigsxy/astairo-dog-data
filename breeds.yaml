@@ -31,3 +31,5 @@ breeds:
     zh: 中型混种犬
     en: medium sized mixed breed
     extra: [mutt dog at home, medium size mixed breed dog lying on floor]
+  # 非品种类别：Open Images 的狗不分品种（含大型/小型犬），只来自公开数据集，不参与爬虫
+  - {id: openimages_dog, zh: OpenImages狗（不分品种）, en: dog, crawl: false}

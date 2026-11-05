@@ -35,7 +35,7 @@ def per_breed(breeds, cfg, args, stages, timing):
     for i, b in enumerate(breeds, 1):
         bid = b["id"]
         t0 = time.time()
-        if "crawl" in stages:
+        if "crawl" in stages and b.get("crawl", True):
             crawl_breed(b, cfg, limit=args.limit)
         if "clean" in stages:
             clean_breed(bid, cfg)
@@ -90,8 +90,8 @@ def main():
     if "crawl" in stages and not args.no_fallback:
         from crawl import build_queries, crawl_breed
         from clean import clean_breed
-        low = [b for b in breeds
-               if sum(r["keep"] for r in read_jsonl(stage_file("clip", b["id"]))) < cfg["crawl"]["min_final"]]
+        low = [b for b in breeds if b.get("crawl", True) and
+               sum(r["keep"] for r in read_jsonl(stage_file("clip", b["id"]))) < cfg["crawl"]["min_final"]]
         if low:
             fb = load_json(WORK / "fallback.json", {})
             for b in low:

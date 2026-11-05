@@ -64,6 +64,9 @@ target_per_breed: [400, 2000]  # 每个品种保留目标区间（超出上限�
 thudogs:
   min_short_side: 200       # 清华低清版单独的最短边下限
 
+openimages:
+  max_images: 3000          # 从 Open Images Dog 类中随机抽取的张数
+
 negatives:
   enabled: false              # 预留：小型犬、大型犬、猫作为负样本
 

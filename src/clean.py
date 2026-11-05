@@ -12,7 +12,7 @@ import hashlib
 import imagehash
 from PIL import Image, ImageOps
 
-from common import RAW, WORK, get_logger, read_jsonl, stage_file, write_jsonl
+from common import RAW, WORK, get_logger, read_jsonl, write_jsonl
 
 log = get_logger("clean")
 Image.MAX_IMAGE_PIXELS = 80_000_000  # 防止解压炸弹
@@ -70,7 +70,9 @@ def clean_breed(bid: str, cfg: dict) -> list[dict]:
         except Exception as e:
             rec.update(keep=False, drop_reason="corrupt", error=str(e)[:120])
         rows.append(rec)
-    write_jsonl(stage_file("clean", bid), rows)
+    from ingest_common import SRC_DIR, merge_clean
+    write_jsonl(SRC_DIR / "crawl" / f"{bid}.jsonl", rows)
+    merge_clean()
     n_keep = sum(r["keep"] for r in rows)
     log.info("[%s] 清洗: 原始 %d -> 保留 %d", bid, len(rows), n_keep)
     return rows
