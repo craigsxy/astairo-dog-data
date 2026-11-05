@@ -41,23 +41,29 @@ def make_zip(cfg: dict) -> list[Path]:
             if p.is_file():
                 z.write(p, Path(name) / p.relative_to(CLEAN))
     sums = [f"{sha256(full)}  {full.name}"]
-    parts = []
-    with open(full, "rb") as f:
-        i = 1
-        while True:
-            buf = f.read(vol)
-            if not buf:
-                break
-            part = DIST / f"{name}.zip.{i:03d}"
-            part.write_bytes(buf)
-            parts.append(part)
-            sums.append(f"{sha256(part)}  {part.name}")
-            i += 1
-    if len(parts) == 1:  # 只有一卷时直接给普通 zip，Windows 双击即可打开
-        parts[0].unlink()
-        sums = [sums[0]]
-        parts = [full]
+    if full.stat().st_size <= vol:
+        parts = [full]  # 不超过分卷大小：直接给普通 zip
     else:
+        parts = []
+        with open(full, "rb") as f:  # 流式切分，不把整卷读进内存
+            i, done = 1, False
+            while not done:
+                part = DIST / f"{name}.zip.{i:03d}"
+                written = 0
+                with open(part, "wb") as out:
+                    while written < vol:
+                        buf = f.read(min(1 << 24, vol - written))
+                        if not buf:
+                            done = True
+                            break
+                        out.write(buf)
+                        written += len(buf)
+                if written == 0:
+                    part.unlink()
+                    break
+                parts.append(part)
+                sums.append(f"{sha256(part)}  {part.name}")
+                i += 1
         full.unlink()  # 只保留分卷，整包哈希保留在 SHA256SUMS 里
     (DIST / "SHA256SUMS.txt").write_text("\n".join(sums) + "\n")
     total = sum(p.stat().st_size for p in parts)
