@@ -1,7 +1,7 @@
 # Stanford Dogs 类别 -> breeds.yaml 品种 id（Stanford 没有柴犬、中华田园犬、澳牧等）
 map:
   Pembroke: pembroke_corgi
-  Cardigan: cardigan_corgi
+  Cardigan: pembroke_corgi   # 与清华一致，柯基合并为一类
   Border_collie: border_collie
   beagle: beagle
   French_bulldog: french_bulldog

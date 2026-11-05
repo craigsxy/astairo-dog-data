@@ -1,6 +1,6 @@
 # 中型犬数据采集报告
 
-生成时间：2026-11-05 05:47
+生成时间：2026-11-05 06:10
 
 ## 数量漏斗
 
@@ -9,31 +9,32 @@
 | american_cocker | 美国可卡 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | australian_cattle_dog | 澳洲牧牛犬 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | australian_shepherd | 澳洲牧羊犬 | 245 | 0 | 14 | 231 | 227 | 0 | 227 | 227 | 227 |
-| basset_hound | 巴吉度 | 241 | 0 | 56 | 185 | 185 | 0 | 185 | 185 | 185 |
-| beagle | 比格犬 | 276 | 0 | 1 | 275 | 274 | 0 | 274 | 274 | 274 |
-| border_collie | 边境牧羊犬 | 2594 | 0 | 72 | 2522 | 2506 | 0 | 2506 | 2506 | 2000 |
-| brittany | 布列塔尼猎犬 | 232 | 0 | 91 | 141 | 141 | 0 | 141 | 141 | 141 |
+| basset_hound | 巴吉度 | 416 | 0 | 62 | 354 | 204 | 0 | 194 | 194 | 194 |
+| beagle | 比格犬 | 471 | 0 | 11 | 460 | 288 | 0 | 284 | 284 | 284 |
+| border_collie | 边境牧羊犬 | 2744 | 0 | 84 | 2660 | 2517 | 1 | 2502 | 2502 | 2000 |
+| brittany | 布列塔尼猎犬 | 384 | 0 | 123 | 261 | 148 | 0 | 135 | 135 | 135 |
 | bull_terrier | 牛头梗 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | cardigan_corgi | 卡迪根柯基 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | chinese_rural_dog | 中华田园犬 | 3336 | 0 | 167 | 3169 | 3151 | 2 | 3151 | 3151 | 2000 |
-| chow_chow | 松狮 | 329 | 0 | 5 | 324 | 322 | 2 | 322 | 322 | 322 |
+| chow_chow | 松狮 | 525 | 0 | 10 | 515 | 332 | 2 | 272 | 272 | 272 |
 | english_bulldog | 英国斗牛犬 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| english_cocker | 英国可卡 | 286 | 0 | 13 | 273 | 271 | 0 | 271 | 271 | 271 |
-| french_bulldog | 法国斗牛犬 | 1121 | 0 | 60 | 1061 | 1058 | 0 | 1058 | 1058 | 1058 |
-| keeshond | 荷兰毛狮犬 | 223 | 0 | 57 | 166 | 166 | 0 | 166 | 166 | 166 |
+| english_cocker | 英国可卡 | 445 | 0 | 18 | 427 | 278 | 0 | 271 | 271 | 271 |
+| french_bulldog | 法国斗牛犬 | 1280 | 0 | 74 | 1206 | 1066 | 0 | 1053 | 1053 | 1053 |
+| keeshond | 荷兰毛狮犬 | 381 | 0 | 62 | 319 | 183 | 0 | 134 | 134 | 134 |
 | mixed_medium | 中型混种犬 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| pembroke_corgi | 柯基 | 3114 | 0 | 147 | 2967 | 2949 | 0 | 2949 | 2949 | 2000 |
+| openimages_dog | OpenImages狗（不分品种） | 3000 | 0 | 4 | 2996 | 2993 | 3 | 2993 | 2993 | 2000 |
+| pembroke_corgi | 柯基 | 3450 | 0 | 160 | 3290 | 2980 | 0 | 2949 | 2949 | 2000 |
 | shar_pei | 沙皮犬 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| shetland_sheepdog | 喜乐蒂 | 274 | 0 | 12 | 262 | 262 | 0 | 262 | 262 | 262 |
+| shetland_sheepdog | 喜乐蒂 | 431 | 0 | 27 | 404 | 272 | 0 | 264 | 264 | 264 |
 | shiba_inu | 柴犬 | 1043 | 0 | 33 | 1010 | 1004 | 0 | 1004 | 1004 | 1004 |
-| siberian_husky | 哈士奇 | 1160 | 0 | 43 | 1117 | 1114 | 0 | 1114 | 1114 | 1114 |
-| springer_spaniel | 史宾格犬 | 276 | 0 | 50 | 226 | 226 | 0 | 226 | 226 | 226 |
-| staffordshire_bull_terrier | 斯塔福梗 | 203 | 0 | 40 | 163 | 163 | 0 | 163 | 163 | 163 |
-| standard_schnauzer | 标准雪纳瑞 | 220 | 0 | 80 | 140 | 139 | 0 | 139 | 139 | 139 |
-| whippet | 惠比特犬 | 234 | 0 | 61 | 173 | 171 | 0 | 171 | 171 | 171 |
-| **合计** | | 15407 | 0 | 1002 | 14405 | 14329 | 4 | 14329 | 14329 | 11723 |
+| siberian_husky | 哈士奇 | 1352 | 0 | 52 | 1300 | 1133 | 1 | 1088 | 1088 | 1088 |
+| springer_spaniel | 史宾格犬 | 435 | 0 | 54 | 381 | 235 | 1 | 229 | 229 | 229 |
+| staffordshire_bull_terrier | 斯塔福梗 | 358 | 0 | 60 | 298 | 169 | 0 | 162 | 162 | 162 |
+| standard_schnauzer | 标准雪纳瑞 | 375 | 0 | 111 | 264 | 164 | 0 | 144 | 144 | 144 |
+| whippet | 惠比特犬 | 421 | 0 | 72 | 349 | 223 | 0 | 196 | 196 | 196 |
+| **合计** | | 21092 | 0 | 1198 | 19894 | 17567 | 10 | 17252 | 17252 | 13657 |
 
-划分：train 9380 / val 1174 / test 1169
+划分：train 10925 / val 1370 / test 1362
 
 ## 下载状态
 
@@ -48,11 +49,11 @@ HTTP 状态计数：
 ## 耗时
 
 - crawl+clean: 0.0 分钟
-- dedup: 0.0 分钟
-- detect: 0.0 分钟
+- dedup: 0.2 分钟
+- detect: 2.7 分钟
 - clip: 0.0 分钟
-- split: 0.1 分钟
-- total_wall: 0.2 分钟
+- split: 0.9 分钟
+- total_wall: 3.8 分钟
 
 ## 抽检拼图
 
@@ -66,6 +67,7 @@ HTTP 状态计数：
 - [english_cocker](contact_sheets/english_cocker.jpg)
 - [french_bulldog](contact_sheets/french_bulldog.jpg)
 - [keeshond](contact_sheets/keeshond.jpg)
+- [openimages_dog](contact_sheets/openimages_dog.jpg)
 - [pembroke_corgi](contact_sheets/pembroke_corgi.jpg)
 - [shetland_sheepdog](contact_sheets/shetland_sheepdog.jpg)
 - [shiba_inu](contact_sheets/shiba_inu.jpg)
