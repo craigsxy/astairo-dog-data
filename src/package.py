@@ -53,7 +53,12 @@ def make_zip(cfg: dict) -> list[Path]:
             parts.append(part)
             sums.append(f"{sha256(part)}  {part.name}")
             i += 1
-    full.unlink()  # 只保留分卷，整包哈希保留在 SHA256SUMS 里
+    if len(parts) == 1:  # 只有一卷时直接给普通 zip，Windows 双击即可打开
+        parts[0].unlink()
+        sums = [sums[0]]
+        parts = [full]
+    else:
+        full.unlink()  # 只保留分卷，整包哈希保留在 SHA256SUMS 里
     (DIST / "SHA256SUMS.txt").write_text("\n".join(sums) + "\n")
     total = sum(p.stat().st_size for p in parts)
     log.info("打包完成: %d 个分卷，共 %.2f GB", len(parts), total / 1e9)

@@ -4,7 +4,7 @@
 map:
   Shiba_Dog: shiba_inu
   Pembroke: pembroke_corgi
-  Cardigan: cardigan_corgi
+  Cardigan: pembroke_corgi   # 清华的 Cardigan 类实为国内家养柯基（多为彭布罗克），合并
   Border_collie: border_collie
   beagle: beagle
   French_bulldog: french_bulldog
