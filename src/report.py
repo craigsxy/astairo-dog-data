@@ -33,7 +33,7 @@ def funnel(bid: str) -> dict:
         final = sum(1 for line in open(man, encoding="utf-8-sig") if f",{bid}," in line)
     reasons = Counter(r.get("drop_reason") for rows in (cl, dd, dt, cp) for r in rows if not r.get("keep"))
     return {
-        "crawled": len(raw),
+        "crawled": len(raw) + sum(1 for r in cl if r.get("source")),  # 爬虫 + 公开数据集
         "corrupt": reasons.get("corrupt", 0),
         "small_or_aspect": reasons.get("too_small", 0) + reasons.get("bad_aspect", 0),
         "after_clean": _count(cl),

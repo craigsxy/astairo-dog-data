@@ -50,7 +50,7 @@ def clip_breed(bid: str, rows_in: list[dict], cfg: dict, batch: int = 32) -> lis
         write_jsonl(stage_file("clip", bid), rows)
         return rows
     cache = {r["sha1"]: r for r in read_jsonl(CACHE)}
-    todo = [r for r in rows if r["sha1"] not in cache]
+    todo = [r for r in rows if r["sha1"] not in cache and not r.get("source")]
     bundle = get_clip(cfg) if todo else True
     if todo and bundle:
         import torch
@@ -81,7 +81,9 @@ def clip_breed(bid: str, rows_in: list[dict], cfg: dict, batch: int = 32) -> lis
     th = cfg["clip"]["threshold"]
     for r in rows:
         e = cache.get(r["sha1"])
-        if e is None:  # CLIP 不可用或读图失败：保留，不做判断
+        if r.get("source"):  # 公开数据集的真实照片，不做 CLIP 判断
+            r.update(keep=True, fake_prob=None)
+        elif e is None:  # CLIP 不可用或读图失败：保留，不做判断
             r.update(keep=True, fake_prob=None)
         elif e["fake_prob"] > th:
             r.update(keep=False, drop_reason="not_real_photo", fake_prob=e["fake_prob"])

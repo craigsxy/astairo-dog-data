@@ -49,7 +49,10 @@ def _load_cache() -> dict:
 def detect_breed(bid: str, rows_in: list[dict], cfg: dict, batch: int = 16) -> list[dict]:
     d = cfg["detect"]
     cache = _load_cache()
-    rows = [dict(r) for r in rows_in if r.get("keep")]
+    rows_all = [dict(r) for r in rows_in if r.get("keep")]
+    # 自带人工标注的数据（如清华狗数据集）直通，不跑 YOLO
+    passthru = [r for r in rows_all if r.get("source") and r.get("boxes") is not None]
+    rows = [r for r in rows_all if not (r.get("source") and r.get("boxes") is not None)]
     todo = [r for r in rows if r["sha1"] not in cache]
     if todo:
         model = get_model(cfg)
@@ -95,6 +98,8 @@ def detect_breed(bid: str, rows_in: list[dict], cfg: dict, batch: int = 16) -> l
             r.update(keep=False, drop_reason="too_many_dogs")
         else:
             r.update(keep=True, drop_reason=None)
+    rows = passthru + rows
     write_jsonl(stage_file("detect", bid), rows)
-    log.info("[%s] YOLO 过滤: %d -> %d", bid, len(rows), sum(r["keep"] for r in rows))
+    log.info("[%s] YOLO 过滤: %d -> %d（其中人工标注直通 %d）", bid, len(rows),
+             sum(r["keep"] for r in rows), len(passthru))
     return rows
