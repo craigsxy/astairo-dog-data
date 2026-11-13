@@ -94,7 +94,7 @@ https://storage.googleapis.com/openimages/2018_04/train/train-images-boxable-wit
 
 - 代码（本仓库）：脚本、配置、品种对照表、统计报告与抽检拼图。图片与 zip 不进 git（.gitignore 排除）。
 - 数据：打包为单个 zip，放在 Google Drive；各版本：
-  - `astairo_public_dogs_v1/`：公开数据集版，34877 张（原件，MD5 c3547981dc4f69b08d670fd3567586f6）
+  - 公开数据集版 34877 张（MD5 c3547981dc4f69b08d670fd3567586f6）：原 `astairo_public_dogs_v1/` 已删除，原件以永久保留的历史版本存于 `astairo_medium_dog_v1/astairo_medium_dog_v1.zip` 的版本记录中
   - `astairo_medium_dog_v1/`：另一会话的爬虫版，4000 张（原件，MD5 aebfc60c6f1fc844736036ff133aa07d）
   - `astairo_dogs_merged_v1/`：两者合并去重后的最终版
 - 复现：`python src/ingest_thudogs.py && python src/ingest_stanford.py && python src/ingest_openimages.py && python src/ingest_crawl_v1.py`，再运行 `python src/run_pipeline.py --stages dedup detect clip split report`。划分使用固定随机种子 42，结果可逐行复现。
