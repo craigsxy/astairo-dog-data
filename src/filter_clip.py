@@ -13,6 +13,7 @@ log = get_logger("clip")
 CACHE = WORK / "cache" / "clip.jsonl"
 STATUS = WORK / "clip_status.json"
 _bundle = None
+PUBLIC = {"thudogs", "stanford", "openimages"}  # 公开数据集：真实照片，跳过 CLIP
 
 
 def get_clip(cfg: dict):
@@ -50,7 +51,7 @@ def clip_breed(bid: str, rows_in: list[dict], cfg: dict, batch: int = 32) -> lis
         write_jsonl(stage_file("clip", bid), rows)
         return rows
     cache = {r["sha1"]: r for r in read_jsonl(CACHE)}
-    todo = [r for r in rows if r["sha1"] not in cache and not r.get("source")]
+    todo = [r for r in rows if r["sha1"] not in cache and r.get("source") not in PUBLIC]
     bundle = get_clip(cfg) if todo else True
     if todo and bundle:
         import torch
@@ -81,7 +82,7 @@ def clip_breed(bid: str, rows_in: list[dict], cfg: dict, batch: int = 32) -> lis
     th = cfg["clip"]["threshold"]
     for r in rows:
         e = cache.get(r["sha1"])
-        if r.get("source"):  # 公开数据集的真实照片，不做 CLIP 判断
+        if r.get("source") in PUBLIC:  # 公开数据集的真实照片，不做 CLIP 判断
             r.update(keep=True, fake_prob=None)
         elif e is None:  # CLIP 不可用或读图失败：保留，不做判断
             r.update(keep=True, fake_prob=None)

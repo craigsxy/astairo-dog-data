@@ -11,6 +11,7 @@ import numpy as np
 from common import WORK, get_logger, read_jsonl, stage_file, write_jsonl
 
 log = get_logger("dedup")
+WILDCARD = {"openimages_dog"}  # 不分品种的类别
 
 
 def popcount(x: np.ndarray) -> np.ndarray:
@@ -54,17 +55,29 @@ def dedup_all(cfg: dict) -> dict[str, list[dict]]:
     if flat:
         h = hashes_to_u64([r["phash"] for _, r in flat])
         owner = np.array([breeds.index(b) for b, _ in flat])
+        wild = np.array([b in WILDCARD for b, _ in flat])
         bad = np.zeros(len(flat), dtype=bool)
         chunk = 2048
         for s in range(0, len(flat), chunk):
             d = hamming_matrix(h[s:s + chunk], h)
             hit = (d <= th) & (owner[s:s + chunk, None] != owner[None, :])
+            # openimages_dog 与任何品种的重复不算标签冲突（单独处理，见下）
+            hit &= ~wild[s:s + chunk, None] & ~wild[None, :]
             rows_hit = hit.any(1)
             bad[s:s + chunk] |= rows_hit
             bad |= hit.any(0)
         for (bid, r), b in zip(flat, bad):
             if b:
                 r.update(keep=False, drop_reason="cross_breed_dup")
+        # 不分品种的 openimages_dog 若与某个品种的保留图重复，丢掉 openimages 那张
+        wi = np.nonzero(wild)[0]
+        kept_named = np.array([i for i, (b, r) in enumerate(flat) if not wild[i] and r["keep"]], dtype=int)
+        if len(wi) and len(kept_named):
+            for s in range(0, len(wi), chunk):
+                idx = wi[s:s + chunk]
+                d = hamming_matrix(h[idx], h[kept_named])
+                for i in idx[(d <= th).any(1)]:
+                    flat[i][1].update(keep=False, drop_reason="dup_of_named_breed")
 
     for bid in breeds:
         write_jsonl(stage_file("dedup", bid), per_breed[bid])

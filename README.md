@@ -66,17 +66,38 @@ data/clean/
   manifest.csv
 ```
 
-`manifest.csv` 字段：`file, split, breed_id, breed_zh, query, source_url, width, height, num_dogs, max_dog_conf, phash`。
+`manifest.csv` 字段：`file, split, breed_id, breed_zh, source, query, source_url, width, height, num_dogs, max_dog_conf, phash, origin, license, creator, label_source, commercial_ok`。
 
-训练：`yolo detect train data=data/clean/dataset.yaml model=yolo11n.pt imgsz=640`（dataset.yaml 不写 path，以自身所在目录为根，解压到哪都能用）。
+- `source`：thudogs / stanford / openimages / crawl_v1；`origin` 为更细的来源（如 bing、openverse/flickr）。
+- `label_source`：human（人工标注框）或 yolo_auto（YOLO 自动预标注）。
+- `commercial_ok`：yes / no / verify，见下文“数据来源与授权”。
 
-标签是 COCO 预训练模型自动生成的预标注，建议训练前抽检修正，重点看多狗、遮挡、狗与人/沙发重叠的图。
+训练：`yolo detect train data=dataset.yaml model=yolo11n.pt imgsz=640`（dataset.yaml 不写 path，以自身所在目录为根，解压到哪都能用）。
 
-合并分卷：Windows `copy /b astairo_medium_dog_v1.zip.001+astairo_medium_dog_v1.zip.002 astairo_medium_dog_v1.zip`；Linux/Mac `cat astairo_medium_dog_v1.zip.* > astairo_medium_dog_v1.zip`。
+`label_source=yolo_auto` 的框是 COCO 预训练模型自动生成的预标注，建议训练前抽检修正，重点看多狗、遮挡、狗与人/沙发重叠的图。
 
-## 数据来源与授权风险
+## 数据来源与授权
 
-网络抓取的图片没有逐张授权，**仅限内部研发与验证使用**。量产模型的训练集需要单独评估授权，优先使用许可证清楚的公开数据集和机器人样机实拍数据。`manifest.csv` 保留了每张图的来源 URL，便于日后追溯和剔除。
+| source | 内容 | 标注 | 授权 | commercial_ok |
+|---|---|---|---|---|
+| thudogs | Tsinghua Dogs 低清版，中型犬品种 | 人工 | 下载页无明确许可证，面向学术研究 | no |
+| stanford | Stanford Dogs（HF 镜像 Voxel51/StanfordDogs） | YOLO 自动 | ImageNet 条款，仅限非商业研究 | no |
+| openimages | Open Images V7 Dog 类，不分品种（breed_id=openimages_dog） | 人工 | 标注 CC BY 4.0；图片 Google 标为 CC BY 2.0，不保证逐图准确 | verify |
+| crawl_v1 | 另一会话的爬虫数据（Openverse + Bing） | YOLO 自动 | Openverse 逐图 CC 协议见 license 列；Bing 授权未知 | 按 license：BY/BY-SA/CC0/PDM=yes，ND=verify，NC 与 Bing=no |
+
+**商用前必须按 `commercial_ok` 筛选。** 只有 yes 的图可直接用于商业模型（BY 类需按 creator、source_url 署名）；verify 需逐图核查；no 只能用于内部非商业研究。
+
+Open Images 逐图授权可用 `source_url` 中的 ImageID 关联官方 image metadata（含 OriginalURL、License、Author）：
+https://storage.googleapis.com/openimages/2018_04/train/train-images-boxable-with-rotation.csv
+
+## 交付方式
+
+- 代码（本仓库）：脚本、配置、品种对照表、统计报告与抽检拼图。图片与 zip 不进 git（.gitignore 排除）。
+- 数据：打包为单个 zip，放在 Google Drive；各版本：
+  - `astairo_public_dogs_v1/`：公开数据集版，34877 张（原件，MD5 c3547981dc4f69b08d670fd3567586f6）
+  - `astairo_medium_dog_v1/`：另一会话的爬虫版，4000 张（原件，MD5 aebfc60c6f1fc844736036ff133aa07d）
+  - `astairo_dogs_merged_v1/`：两者合并去重后的最终版
+- 复现：`python src/ingest_thudogs.py && python src/ingest_stanford.py && python src/ingest_openimages.py && python src/ingest_crawl_v1.py`，再运行 `python src/run_pipeline.py --stages dedup detect clip split report`。划分使用固定随机种子 42，结果可逐行复现。
 
 ## 公开数据集（训练人员自行下载）
 

@@ -74,5 +74,5 @@ negatives:
   enabled: false              # 预留：小型犬、大型犬、猫作为负样本
 
 package:
-  name: astairo_public_dogs_v1
+  name: astairo_dogs_merged_v1
   volume_size_mb: 16384       # 单个 zip 不切分卷（Windows 可直接打开）

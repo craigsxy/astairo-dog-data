@@ -15,12 +15,37 @@ import shutil
 import numpy as np
 import yaml
 
-from common import CLEAN, WORK, get_logger, load_breeds, read_jsonl, stage_file
+from common import CLEAN, WORK, get_logger, load_breeds, read_jsonl
 from dedup import hamming_matrix, hashes_to_u64
 
 log = get_logger("split")
 SPLITS = ["train", "val", "test"]
 CLUSTER_TH = 10  # 比去重阈值宽松，把“相似但没被判重复”的图也绑在一起
+
+
+def license_info(r: dict) -> dict:
+    """每张图的来源细分、授权、作者、标注方式，以及能否商用（yes / no / verify）。"""
+    src = r.get("source", "crawl")
+    if src == "thudogs":
+        return {"origin": "tsinghua_dogs", "license": "research only (no explicit license)", "creator": "",
+                "label_source": "human", "commercial_ok": "no"}
+    if src == "stanford":
+        return {"origin": "stanford_dogs", "license": "ImageNet terms (non-commercial research)", "creator": "",
+                "label_source": "yolo_auto", "commercial_ok": "no"}
+    if src == "openimages":
+        return {"origin": "open_images_v7", "license": "CC BY 2.0 per Google (unverified per image)",
+                "creator": "", "label_source": "human", "commercial_ok": "verify"}
+    lic = (r.get("license") or "").lower()
+    if "unknown" in lic or not lic:
+        ok = "no"
+    elif "nc" in lic.replace("cc0", ""):
+        ok = "no"
+    elif "-nd" in lic or " nd" in lic:
+        ok = "verify"
+    else:
+        ok = "yes"  # CC BY / BY-SA / CC0 / PDM；BY 类需署名
+    return {"origin": r.get("origin", src), "license": r.get("license", ""), "creator": r.get("creator", ""),
+            "label_source": r.get("label_source", "yolo_auto"), "commercial_ok": ok}
 
 
 def _clusters(rows: list[dict]) -> list[int]:
@@ -113,6 +138,7 @@ def build_dataset(cfg: dict) -> list[dict]:
             "source": r.get("source", "crawl"), "query": r["query"], "source_url": r["source_url"], "width": r["width"],
             "height": r["height"], "num_dogs": r["num_dogs"], "max_dog_conf": r["max_dog_conf"],
             "phash": r["phash"],
+            **license_info(r),
         })
 
     with open(CLEAN / "manifest.csv", "w", newline="", encoding="utf-8-sig") as f:
