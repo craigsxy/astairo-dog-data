@@ -42,7 +42,10 @@ clip:
   enabled: true
   model: ViT-B-32
   pretrained: laion2b_s34b_b79k
-  threshold: 0.5              # 非真实照片概率之和超过该值丢弃
+  threshold: 0.5              # drop_on 中各类概率之和超过该值丢弃
+  # 只按卡通/插画和文字/梗图删除；“毛绒玩具”只作干扰项参与 softmax，
+  # 实测按它删除会误伤大量叼玩具的真狗（227 张里约 80% 是误判）
+  drop_on: ["a cartoon or illustration of a dog", "an image of text or a meme"]
   prompts:
     real: ["a real photo of a dog"]
     fake:

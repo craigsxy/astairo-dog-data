@@ -32,7 +32,7 @@ def get_clip(cfg: dict):
         with torch.no_grad():
             tf = model.encode_text(tok(prompts))
             tf = tf / tf.norm(dim=-1, keepdim=True)
-        _bundle = (model, preprocess, tf, len(c["prompts"]["real"]))
+        _bundle = (model, preprocess, tf, prompts)
         save_json(STATUS, {"ok": True, "model": f"{c['model']}/{c['pretrained']}"})
         log.info("CLIP 加载成功: %s/%s", c["model"], c["pretrained"])
         return _bundle
@@ -56,7 +56,7 @@ def clip_breed(bid: str, rows_in: list[dict], cfg: dict, batch: int = 32) -> lis
     if todo and bundle:
         import torch
         from PIL import Image
-        model, preprocess, tf, n_real = bundle
+        model, preprocess, tf, prompts = bundle
         for s in range(0, len(todo), batch):
             chunk = todo[s:s + batch]
             ims, ok = [], []
@@ -74,22 +74,29 @@ def clip_breed(bid: str, rows_in: list[dict], cfg: dict, batch: int = 32) -> lis
                 f = f / f.norm(dim=-1, keepdim=True)
                 probs = (100.0 * f @ tf.T).softmax(dim=-1)
             for r, p in zip(ok, probs.tolist()):
-                entry = {"sha1": r["sha1"], "fake_prob": round(sum(p[n_real:]), 4),
-                         "probs": [round(x, 4) for x in p]}
+                entry = {"sha1": r["sha1"], "probs": [round(x, 4) for x in p], "prompts": prompts}
                 cache[r["sha1"]] = entry
                 append_jsonl(CACHE, entry)
 
     th = cfg["clip"]["threshold"]
+    c = cfg["clip"]
+    all_prompts = c["prompts"]["real"] + c["prompts"]["fake"]
+    drop_on = c.get("drop_on", c["prompts"]["fake"])
+
+    def fake_prob(e):
+        names = e.get("prompts", all_prompts)
+        return round(sum(p for n, p in zip(names, e["probs"]) if n in drop_on), 4)
+
     for r in rows:
         e = cache.get(r["sha1"])
         if r.get("source") in PUBLIC:  # 公开数据集的真实照片，不做 CLIP 判断
             r.update(keep=True, fake_prob=None)
         elif e is None:  # CLIP 不可用或读图失败：保留，不做判断
             r.update(keep=True, fake_prob=None)
-        elif e["fake_prob"] > th:
-            r.update(keep=False, drop_reason="not_real_photo", fake_prob=e["fake_prob"])
+        elif fake_prob(e) > th:
+            r.update(keep=False, drop_reason="not_real_photo", fake_prob=fake_prob(e))
         else:
-            r.update(keep=True, fake_prob=e["fake_prob"])
+            r.update(keep=True, drop_reason=None, fake_prob=fake_prob(e))
     write_jsonl(stage_file("clip", bid), rows)
     log.info("[%s] CLIP 过滤: %d -> %d", bid, len(rows), sum(r["keep"] for r in rows))
     return rows
